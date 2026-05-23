@@ -16,8 +16,16 @@ from telegram.ext import (
 )
 
 import os
+import random
+from urllib.parse import quote
 
+
+# ---------------- TOKEN SAFE LOAD ----------------
 TOKEN = os.getenv("TOKEN")
+
+if not TOKEN:
+    print("❌ ERROR: TOKEN missing in environment variables")
+    exit()
 
 
 # ---------------- START ----------------
@@ -190,7 +198,7 @@ async def reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text("🧠 Processing prompt...")
 
-    image_url = f"https://image.pollinations.ai/prompt/{text}"
+    image_url = f"https://image.pollinations.ai/prompt/{quote(text)}"
 
     await update.message.reply_photo(photo=image_url)
 
