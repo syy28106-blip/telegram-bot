@@ -15,9 +15,9 @@ from telegram.ext import (
     ContextTypes
 )
 
-import random
+import os
 
-TOKEN = "8617243274:AAEnQEVS0zX3Tr1sAZGoMFuP_FxTJM9xYSA"
+TOKEN = os.getenv("TOKEN")
 
 
 # ---------------- START ----------------
