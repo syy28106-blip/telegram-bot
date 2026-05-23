@@ -15,21 +15,22 @@ from telegram.ext import (
     ContextTypes
 )
 
-import os
 import random
-from urllib.parse import quote
+
+# ================= TOKEN =================
+TOKEN = "8617243274:AAES1fjK92CaQLvCg-CfI8mtqMJVabiG_e8"
+
+# ================= OWNER ID =================
+OWNER_ID = 123456789
+
+# ================= QR IMAGE =================
+QR_IMAGE = "https://i.postimg.cc/j2HcFQqj/hariscanner.jpg"
 
 
-# ---------------- TOKEN SAFE LOAD ----------------
-TOKEN = os.getenv("TOKEN")
-
-if not TOKEN:
-    print("❌ ERROR: TOKEN missing in environment variables")
-    exit()
-
-
-# ---------------- START ----------------
+# ================= START =================
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    context.user_data["ai_mode"] = False
 
     keyboard = [
         [
@@ -42,40 +43,41 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ],
         [
             InlineKeyboardButton("🎮 Game", callback_data="game"),
-            InlineKeyboardButton("🎁 Daily Reward", callback_data="daily")
+            InlineKeyboardButton("🎁 Reward", callback_data="daily")
         ],
         [
             InlineKeyboardButton("ℹ️ Help", callback_data="help")
         ]
     ]
 
-    reply_markup = InlineKeyboardMarkup(keyboard)
-
     text = """
-🔥 Welcome To Hari Bhai Services 🔥
+🔥 WELCOME TO HARI BHAI SERVICES 🔥
 
 ━━━━━━━━━━━━━━━━━━
-🤖 MULTI FEATURE BOT
+🤖 PREMIUM MULTI FEATURE BOT
 ━━━━━━━━━━━━━━━━━━
 
 🎨 AI Image Generator
-📈 Social Tools
+📈 Followers Services
 💰 Earning System
-🎮 Mini Game
+🎮 Games
 🎁 Daily Rewards
-👑 Premium Access
+👑 VIP Premium
 
 ━━━━━━━━━━━━━━━━━━
-🚀 Fast • Smart • Powerful
+⚡ FAST • SAFE • NON DROP
 ━━━━━━━━━━━━━━━━━━
 
-Choose option below 👇
+👇 CHOOSE OPTION BELOW
 """
 
-    await update.message.reply_text(text, reply_markup=reply_markup)
+    await update.message.reply_text(
+        text,
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
 
 
-# ---------------- BUTTON HANDLER ----------------
+# ================= BUTTON HANDLER =================
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
@@ -84,70 +86,201 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     data = query.data
 
 
-    # ---------------- IMAGE ----------------
+    # ================= AI IMAGE =================
     if data == "image":
+
+        context.user_data["ai_mode"] = True
+
         await query.message.reply_text(
-            "🎨 Send any prompt\n\nExample:\ncyberpunk city, neon lights"
+            "🎨 SEND YOUR IMAGE PROMPT\n\n"
+            "Example:\n"
+            "cyberpunk city neon lights"
         )
 
 
-    # ---------------- FOLLOWERS ----------------
+    # ================= FOLLOWERS =================
     elif data == "followers":
+
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    "📢 Telegram Services",
+                    callback_data="telegram_service"
+                ),
+
+                InlineKeyboardButton(
+                    "📸 Instagram Services",
+                    callback_data="insta_service"
+                )
+            ]
+        ]
+
+        text = """
+📈 FOLLOWERS PANEL
+
+━━━━━━━━━━━━━━━━━━
+🔥 CHOOSE YOUR SERVICE
+━━━━━━━━━━━━━━━━━━
+
+📢 Telegram Subscribers
+📸 Instagram Followers
+
+⚡ Fast Delivery
+🛡️ Non Drop
+"""
+
         await query.message.reply_text(
-            "📈 Followers Service\n\n🔥 Instagram\n🔥 YouTube\n🔥 Telegram\n\n⚡ Coming Soon"
+            text,
+            reply_markup=InlineKeyboardMarkup(keyboard)
         )
 
 
-    # ---------------- EARNING ----------------
+    # ================= TELEGRAM SERVICE =================
+    elif data == "telegram_service":
+
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    "🔥 1000 Subs ₹30",
+                    callback_data="tg_1000"
+                ),
+
+                InlineKeyboardButton(
+                    "⚡ 2000 Subs ₹60",
+                    callback_data="tg_2000"
+                )
+            ]
+        ]
+
+        text = """
+📢 TELEGRAM SUBSCRIBERS
+
+━━━━━━━━━━━━━━━━━━
+✅ NON DROP SERVICE
+⚡ FAST DELIVERY
+🚀 REAL LOOKING MEMBERS
+━━━━━━━━━━━━━━━━━━
+
+👇 SELECT PACKAGE
+"""
+
+        await query.message.reply_text(
+            text,
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+
+
+    # ================= PACKAGE SELECT =================
+    elif data == "tg_1000" or data == "tg_2000":
+
+        if data == "tg_1000":
+            quantity = "1000"
+            price = 30
+
+        else:
+            quantity = "2000"
+            price = 60
+
+        context.user_data["service"] = "Telegram Subscribers"
+        context.user_data["quantity"] = quantity
+        context.user_data["price"] = price
+
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    "🛒 ORDER NOW",
+                    callback_data="order_now"
+                ),
+
+                InlineKeyboardButton(
+                    "🔙 BACK",
+                    callback_data="telegram_service"
+                )
+            ]
+        ]
+
+        text = f"""
+🔥 SERVICE SELECTED
+
+━━━━━━━━━━━━━━━━━━
+📢 Telegram Subscribers
+👥 Quantity : {quantity}
+💰 Price : ₹{price}
+━━━━━━━━━━━━━━━━━━
+
+🛡️ NON DROP
+⚡ FAST DELIVERY
+
+👇 CLICK ORDER NOW
+"""
+
+        await query.message.reply_text(
+            text,
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+
+
+    # ================= ORDER NOW =================
+    elif data == "order_now":
+
+        context.user_data["waiting_link"] = True
+
+        await query.message.reply_text(
+            "🛒 SEND YOUR TELEGRAM CHANNEL LINK\n\n"
+            "Example:\n"
+            "https://t.me/yourchannel"
+        )
+
+
+    # ================= EARNING =================
     elif data == "earning":
+
         await query.message.reply_text(
-            "💰 Earning System\n\n"
-            "🎯 Refer & Earn\n"
-            "📌 Daily Tasks\n"
-            "🎁 Rewards\n\n"
-            "🚀 Coming Soon"
+            "💰 EARNING SYSTEM COMING SOON 🚀"
         )
 
 
-    # ---------------- PREMIUM ----------------
+    # ================= PREMIUM =================
     elif data == "premium":
+
         await query.message.reply_text(
-            "👑 Premium Features\n\n"
-            "⚡ Unlimited Images\n"
-            "⚡ Faster Speed\n"
-            "⚡ VIP Support\n\n"
-            "🔥 Coming Soon"
+            "👑 PREMIUM FEATURES COMING SOON 🚀"
         )
 
 
-    # ---------------- HELP ----------------
+    # ================= HELP =================
     elif data == "help":
+
         await query.message.reply_text(
-            "ℹ️ Help\n\n"
-            "👉 Send text for AI image\n"
-            "👉 Use buttons for features\n\n"
-            "Example: sunset on mountains"
+            "ℹ️ HELP SECTION\n\n"
+            "👉 Use buttons for services\n"
+            "👉 AI image works only after clicking AI Image button"
         )
 
 
-    # ---------------- DAILY REWARD ----------------
+    # ================= DAILY REWARD =================
     elif data == "daily":
 
         coins = context.user_data.get("coins", 0)
+
         reward = random.randint(10, 50)
 
         coins += reward
+
         context.user_data["coins"] = coins
 
         await query.message.reply_text(
-            f"🎁 Daily Reward Claimed!\n\n💰 +{reward} coins\n🪙 Total: {coins}"
+            f"🎁 DAILY REWARD CLAIMED\n\n"
+            f"💰 +{reward} Coins\n"
+            f"🪙 Total : {coins}"
         )
 
 
-    # ---------------- GAME ----------------
+    # ================= GAME =================
     elif data == "game":
 
         number = random.randint(1, 5)
+
         context.user_data["game"] = number
 
         keyboard = [
@@ -163,53 +296,175 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ]
 
         await query.message.reply_text(
-            "🎮 Guess Number (1-5)",
+            "🎮 GUESS NUMBER (1-5)",
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
 
 
-    # ---------------- GAME GUESS ----------------
+    # ================= GAME RESULT =================
     elif data.startswith("g_"):
 
         guess = int(data.split("_")[1])
+
         correct = context.user_data.get("game")
 
-        if correct is None:
-            await query.message.reply_text("⚠️ Game restart karo /start se")
-            return
-
         if guess == correct:
-            msg = "🎉 Correct! You Win 🔥"
+            msg = "🎉 CORRECT! YOU WIN 🔥"
+
         else:
-            msg = f"❌ Wrong! Correct was {correct}"
+            msg = f"❌ WRONG! CORRECT WAS {correct}"
 
         await query.message.reply_text(msg)
 
 
-# ---------------- IMAGE GENERATOR ----------------
+# ================= MESSAGE HANDLER =================
 async def reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = update.message.text
 
-    await context.bot.send_chat_action(
-        chat_id=update.effective_chat.id,
-        action=ChatAction.TYPING
+
+    # ================= CHANNEL LINK =================
+    if context.user_data.get("waiting_link"):
+
+        context.user_data["channel_link"] = text
+
+        context.user_data["waiting_link"] = False
+
+        context.user_data["waiting_payment"] = True
+
+        service = context.user_data.get("service")
+        quantity = context.user_data.get("quantity")
+        price = context.user_data.get("price")
+
+        caption = f"""
+💳 PAYMENT REQUIRED
+
+━━━━━━━━━━━━━━━━━━
+📢 SERVICE : {service}
+👥 QUANTITY : {quantity}
+💰 PRICE : ₹{price}
+━━━━━━━━━━━━━━━━━━
+
+✅ SCAN QR & PAY
+📸 SEND PAYMENT SCREENSHOT
+
+⚠️ AFTER PAYMENT SEND SS HERE
+"""
+
+        await update.message.reply_photo(
+            photo=QR_IMAGE,
+            caption=caption
+        )
+
+        return
+
+
+    # ================= WAITING PAYMENT =================
+    if context.user_data.get("waiting_payment"):
+
+        await update.message.reply_text(
+            "⚠️ PLEASE SEND PAYMENT SCREENSHOT IMAGE"
+        )
+
+        return
+
+
+    # ================= AI IMAGE MODE =================
+    if context.user_data.get("ai_mode"):
+
+        await context.bot.send_chat_action(
+            chat_id=update.effective_chat.id,
+            action=ChatAction.TYPING
+        )
+
+        await update.message.reply_text(
+            "🧠 PROCESSING PROMPT..."
+        )
+
+        image_url = f"https://image.pollinations.ai/prompt/{text}"
+
+        await update.message.reply_photo(photo=image_url)
+
+        context.user_data["ai_mode"] = False
+
+        return
+
+
+    # ================= DEFAULT =================
+    await update.message.reply_text(
+        "⚠️ PLEASE SELECT OPTION FROM MENU"
     )
 
-    await update.message.reply_text("🧠 Processing prompt...")
 
-    image_url = f"https://image.pollinations.ai/prompt/{quote(text)}"
+# ================= PHOTO HANDLER =================
+async def photo_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
-    await update.message.reply_photo(photo=image_url)
+    if not context.user_data.get("waiting_payment"):
+        return
+
+    user = update.effective_user
+
+    service = context.user_data.get("service")
+    quantity = context.user_data.get("quantity")
+    price = context.user_data.get("price")
+    link = context.user_data.get("channel_link")
+
+    photo = update.message.photo[-1].file_id
+
+    # ================= USER SUCCESS =================
+    await update.message.reply_text(
+        "✅ PAYMENT SCREENSHOT RECEIVED\n\n"
+        "🚀 ORDER SUBMITTED SUCCESSFULLY\n"
+        "⏳ DELIVERY START SOON"
+    )
+
+    # ================= SEND TO OWNER =================
+    caption = f"""
+🔥 NEW ORDER RECEIVED
+
+━━━━━━━━━━━━━━━━━━
+👤 USER : @{user.username}
+🆔 ID : {user.id}
+
+📢 SERVICE : {service}
+👥 QUANTITY : {quantity}
+💰 PRICE : ₹{price}
+
+🔗 CHANNEL :
+{link}
+━━━━━━━━━━━━━━━━━━
+"""
+
+    await context.bot.send_photo(
+        chat_id=OWNER_ID,
+        photo=photo,
+        caption=caption
+    )
+
+    context.user_data["waiting_payment"] = False
 
 
-# ---------------- MAIN APP ----------------
+# ================= MAIN =================
 app = ApplicationBuilder().token(TOKEN).build()
 
 app.add_handler(CommandHandler("start", start))
-app.add_handler(CallbackQueryHandler(button))
-app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, reply))
 
-print("🔥 Bot Running Successfully...")
+app.add_handler(CallbackQueryHandler(button))
+
+app.add_handler(
+    MessageHandler(
+        filters.PHOTO,
+        photo_handler
+    )
+)
+
+app.add_handler(
+    MessageHandler(
+        filters.TEXT & ~filters.COMMAND,
+        reply
+    )
+)
+
+print("🔥 BOT RUNNING SUCCESSFULLY...")
 
 app.run_polling()
